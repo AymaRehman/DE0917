@@ -1,0 +1,20 @@
+# Ignore OS-specific files
+.DS_Store        # macOS Finder
+Thumbs.db        # Windows Explorer
+
+# Ignore IDE/editor files
+.vscode/          # VS Code settings
+.idea/            # IntelliJ, PyCharm, WebStorm, etc.
+*.swp             # Vim swap files
+*.swo             # Vim swap files
+*.log             # Log files
+*.bak             # Backup files
+
+# Ignore virtual environment directories
+venv/
+env/
+.venv/
+
+# Ignore coverage reports
+*.coverage
+coverage/
