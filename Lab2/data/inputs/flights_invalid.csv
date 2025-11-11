@@ -1,4 +1,5 @@
 flight_id,origin,destination,departure_datetime,arrival_datetime,price
+# === Invalid flights (for testing validation) ===
 BADLINE,NO_DATE,NO_TIME
 BA_BAD,RIX,LON,2025-11-15 11:00,INVALID_DATE,250.00
 SK404,OSL,RIX,2025-11-15 14:00,2025-11-15 12:00,120.00
