@@ -1,3 +1,7 @@
+# Author: Ayma Rehman  
+# Student ID: 241ADB165  
+# GitHub Repository: https://github.com/AymaRehman/DE0917/tree/main/Lab2
+
 import csv, os, re, json, argparse
 from datetime import datetime
 
