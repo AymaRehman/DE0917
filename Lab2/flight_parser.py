@@ -1,6 +1,7 @@
 import csv, os, re, json, argparse
 from datetime import datetime
 
+# --- Validation Functions ---
 def validate_flight(row):
     flight_id, origin, destination, dep_dt, arr_dt, price = row
 
@@ -31,14 +32,19 @@ def validate_flight(row):
 
     return True, None
 
+# --- CSV Parsing ---
 def parse_csv(file_path):
     valid, invalid = [], []
     try:
         with open(file_path, newline="") as f:
             reader = csv.reader(f)
-            for i, row in enumerate(reader, start=1):
+            headers = next(reader, None)  # Skip the first header line (if present)
+
+            for i, row in enumerate(reader, start=2):  # start=2 to account for header line
                 if not row or row[0].startswith("#"):
                     continue
+                if row == headers:
+                    continue  # skip repeated header lines
                 if len(row) < 6:
                     invalid.append((i, row, "Less number of columns than expected"))
                 elif len(row) > 6:
@@ -62,6 +68,7 @@ def parse_csv(file_path):
         print(f"⚠️ Error reading {file_path}: {e}")
     return valid, invalid
 
+# --- JSON Save / Load ---
 def save_json(data, path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as f:
@@ -73,6 +80,11 @@ def save_errors(errors, path):
         for line_no, row, reason in errors:
             f.write(f"Line {line_no}: {','.join(row)} → {reason}\n")
 
+def load_json(path):
+    with open(path, "r") as f:
+        return json.load(f)
+
+# --- Directory Parsing ---
 def process_directory(directory):
     all_valid, all_invalid = [], []
     for filename in os.listdir(directory):
@@ -84,26 +96,75 @@ def process_directory(directory):
             all_invalid.extend([(f"{filename}:{ln}", row, reason) for ln, row, reason in invalid])
     return all_valid, all_invalid
 
+# --- Query Filtering ---
+def matches_query(flight, query):
+    for field, value in query.items():
+        if field in ["flight_id", "origin", "destination"]:
+            if flight.get(field) != value:
+                return False
+        elif field == "departure_datetime":
+            if datetime.strptime(flight[field], "%Y-%m-%d %H:%M") < datetime.strptime(value, "%Y-%m-%d %H:%M"):
+                return False
+        elif field == "arrival_datetime":
+            if datetime.strptime(flight[field], "%Y-%m-%d %H:%M") > datetime.strptime(value, "%Y-%m-%d %H:%M"):
+                return False
+        elif field == "price":
+            if flight[field] > value:
+                return False
+    return True
+
+def run_queries(flights, query_file):
+    queries = load_json(query_file)
+    if not isinstance(queries, list):
+        queries = [queries]
+    responses = []
+    for q in queries:
+        matches = [f for f in flights if matches_query(f, q)]
+        responses.append({"query": q, "matches": matches})
+    return responses
+
+# --- Paths for Lab2
+BASE_DIR = os.path.dirname(os.path.abspath(__file__)) 
+OUTPUT_JSON = os.path.join(BASE_DIR, "data/db.json")
+ERRORS_TXT = os.path.join(BASE_DIR, "data/errors.txt")
+RESPONSE_JSON = os.path.join(BASE_DIR, "data/response.json")
+
+# --- Main ---
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input", help="CSV input file")
     parser.add_argument("-d", "--directory", help="Folder containing multiple CSVs")
-    parser.add_argument("-o", "--output", default="data/db.json")
-    parser.add_argument("-e", "--errors", default="data/errors.txt")
+    parser.add_argument("-o", "--output", default=OUTPUT_JSON)
+    parser.add_argument("-e", "--errors", default=ERRORS_TXT)
+    parser.add_argument("-j", "--json", help="Load existing JSON database")
+    parser.add_argument("-q", "--query", help="JSON query file")
+    parser.add_argument("-r", "--response", help=RESPONSE_JSON)
     args = parser.parse_args()
 
-    if args.directory:
-        valid, invalid = process_directory(args.directory)
+    # Load or parse flights
+    if args.json:
+        flights = load_json(args.json)
+        invalid = []
+    elif args.directory:
+        flights, invalid = process_directory(args.directory)
     elif args.input:
-        valid, invalid = parse_csv(args.input)
+        flights, invalid = parse_csv(args.input)
     else:
-        print("❌ Please provide either -i <file> or -d <directory>")
+        print("❌ Please provide either -i <file> or -d <directory>, or -j <json>")
         return
 
-    save_json(valid, args.output)
+    save_json(flights, args.output)
     save_errors(invalid, args.errors)
-    print(f"✅ Saved {len(valid)} valid flights and {len(invalid)} errors.")
+    print(f"✅ Saved {len(flights)} valid flights and {len(invalid)} errors.")
 
+    # Run queries if requested
+    if args.query:
+        responses = run_queries(flights, args.query)
+        if args.response:
+            save_json(responses, args.response)
+        else:
+            save_json(responses, "Lab2/data/response.json")
+        print(f"✅ Query executed. {len(responses)} responses saved.")
 
 if __name__ == "__main__":
     main()
