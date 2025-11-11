@@ -19,23 +19,32 @@ Each lab folder contains:
 ## Folder Structure  
 
 ```     
-DE0917/                  
-├── LICENSE              
-├── README.md            
-├── .gitignore           
-├── Lab1/               
-│   ├── .gitignore       
-│   ├── assignment.md    
-│   ├── calc.c           
-│   ├── lab1_explanation.md  
-│   └── report.md        
-├── Lab2/                
-│   ├── .gitignore       
-│   ├── assignment.md    
-│   ├── lab2_explanation.md  
-│   └── report.md        
-│   └── requirements.txt 
-└── (other labs)         
+DE0917/
+├── LICENSE
+├── README.md
+├── .gitignore
+├── Lab1/
+│   ├── .gitignore
+│   ├── assignment.md
+│   ├── calc.c
+│   ├── lab1_explanation.md
+│   └── report.md
+├── Lab2/
+│   ├── data/
+│   │   ├── inputs/
+│   │   │   ├── flights_invalid.csv
+│   │   │   ├── flights_valid.csv
+│   │   │   └── query.json
+│   │   ├── db.json
+│   │   ├── errors.txt
+│   │   └── response.json
+│   ├── .gitignore
+│   ├── assignment.md
+│   ├── lab2_explanation.md
+│   ├── report.md
+│   └── requirements.txt
+└── (other labs)
+     
 ```
 
 ---
@@ -43,3 +52,4 @@ DE0917/
 ### License
 
 This repository is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
