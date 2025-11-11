@@ -22,6 +22,24 @@ Create a Python program that parses flight schedule CSV files, validates and sep
 - Execute queries from JSON files and export responses.
 - CLI with `argparse` for flexible file/folder parsing, query execution, and custom output paths.
 
+## Folder Structure
+```
+Lab2/
+├── data/
+│   ├── inputs/
+│   │   ├── flights_invalid.csv
+│   │   ├── flights_valid.csv
+│   │   └── query.json
+│   ├── db.json
+│   ├── errors.txt
+│   └── response.json
+├── .gitignore
+├── flight_parser.py
+├── assignment.md
+├── lab2_explanation.md
+├── report.md
+└── requirements.txt
+```
 ## How To Run
   
 All commands are executed from the project root (where the `Lab2/` folder is located).
@@ -79,3 +97,4 @@ python Lab2/flight_parser.py -i Lab2/data/inputs/flights.csv \
   
 ## License
 This project is submitted as part of a university assignment. All code is authored by Ayma Rehman.
+
