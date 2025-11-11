@@ -40,6 +40,7 @@ DE0917/
 │   │   └── response.json
 │   ├── .gitignore
 │   ├── assignment.md
+|   ├── flight_parser.py
 │   ├── lab2_explanation.md
 │   ├── report.md
 │   └── requirements.txt
@@ -52,4 +53,5 @@ DE0917/
 ### License
 
 This repository is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
 
