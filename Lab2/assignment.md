@@ -151,7 +151,7 @@ Line 19: SN2902,BRU,LHR,2025-13-40 10:00,2025-13-40 12:00,99.99 → invalid date
 ## 🔍 Query File Format (`query.json`) 
 A query file can contain a single object or an array of query objects.  
 Each query object can include any subset of the flight fields:  
-```
+```json
 [
   { "origin": "LHR", "destination": "JFK" },
   { "price": 200.00 },
@@ -179,7 +179,7 @@ response_<studentid>_<name>_<lastname>_<YYYYMMDD_HHMM>.json
 Always an array, even for a single query.  
 Each element corresponds to one query:  
 
-```
+``` json
 [
   {
     "query": { "origin": "LHR", "destination": "JFK" },
