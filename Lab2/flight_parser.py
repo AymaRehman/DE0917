@@ -131,14 +131,14 @@ RESPONSE_JSON = os.path.join(BASE_DIR, "data/response.json")
 
 # --- Main ---
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--input", help="CSV input file")
-    parser.add_argument("-d", "--directory", help="Folder containing multiple CSVs")
-    parser.add_argument("-o", "--output", default=OUTPUT_JSON)
-    parser.add_argument("-e", "--errors", default=ERRORS_TXT)
-    parser.add_argument("-j", "--json", help="Load existing JSON database")
-    parser.add_argument("-q", "--query", help="JSON query file")
-    parser.add_argument("-r", "--response", help=RESPONSE_JSON)
+    parser = argparse.ArgumentParser(description="Flight Data Parser and Query Tool")
+    parser.add_argument("-i", "--input", metavar = "CSV_FILE", help="Parse a single CSV file. Format: -i path/to/file.csv")
+    parser.add_argument("-d", "--directory", metavar = "CSV_FOLDER", help="Parse a folder containing multiple CSV files. Format: -d path/to/folder")
+    parser.add_argument("-o", "--output", metavar = "OUTPUT_JSON", default=OUTPUT_JSON, help="Output JSON database path. Default: Lab2/data/db.json; Format: -o path/to/output.json")
+    parser.add_argument("-e", "--errors", metavar = "ERROR_LOG", default=ERRORS_TXT, help="Output errors log path. Default: Lab2/data/errors.txt; Format: -e path/to/errors.txt")
+    parser.add_argument("-j", "--json", metavar = "JSON_DB", help="Load existing JSON database rather than parsing CSVs. Format: -j path/to/file.json")
+    parser.add_argument("-q", "--query", metavar = "QUERY_JSON", help="Respond to queries provided in JSON query file. Format: -q path/to/query.json")
+    parser.add_argument("-r", "--response", metavar = "RESPONSE_JSON", default=RESPONSE_JSON, help="Output responses to queries in JSON file. Default: Lab2/data/response.json; Format: -r path/to/response.json")
     args = parser.parse_args()
 
     # Load or parse flights
