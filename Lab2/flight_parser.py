@@ -109,16 +109,29 @@ def matches_query(flight, query):
         if field in ["flight_id", "origin", "destination"]:
             if flight.get(field) != value:
                 return False
-        elif field == "departure_datetime":
-            if datetime.strptime(flight[field], "%Y-%m-%d %H:%M") < datetime.strptime(value, "%Y-%m-%d %H:%M"):
+        elif field in ["departure_datetime", "arrival_datetime"]:
+            try:
+                flight_dt = datetime.strptime(flight[field], "%Y-%m-%d %H:%M")
+                query_dt = datetime.strptime(value, "%Y-%m-%d %H:%M")
+            except ValueError:
+                # Bad datetime format in the query → skip this query match
+                print(f"⚠️ Skipping query: bad datetime format in {field} → {value}")
                 return False
-        elif field == "arrival_datetime":
-            if datetime.strptime(flight[field], "%Y-%m-%d %H:%M") > datetime.strptime(value, "%Y-%m-%d %H:%M"):
+
+            if field == "departure_datetime" and flight_dt < query_dt:
+                return False
+            elif field == "arrival_datetime" and flight_dt > query_dt:
                 return False
         elif field == "price":
-            if flight[field] > value:
+            try:
+                if flight[field] > float(value):
+                    return False
+            except ValueError:
+                print(f"⚠️ Skipping query: bad price value → {value}")
                 return False
     return True
+
+# --- Running Query ---
 
 def run_queries(flights, query_file):
     queries = load_json(query_file)
@@ -130,7 +143,7 @@ def run_queries(flights, query_file):
         responses.append({"query": q, "matches": matches})
     return responses
 
-# --- Paths for Lab2
+# --- Paths for Lab2 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)) 
 OUTPUT_JSON = os.path.join(BASE_DIR, "data/db.json")
 ERRORS_TXT = os.path.join(BASE_DIR, "data/errors.txt")
