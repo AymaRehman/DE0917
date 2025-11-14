@@ -194,11 +194,16 @@ def main():
     # Run queries if requested
     if args.query:
         responses = run_queries(flights, args.query)
-        if args.response:
-            save_json(responses, args.response)
-        else:
-            save_json(responses, "Lab2/data/response.json")
-        print(f"✅ Query executed. {len(responses)} responses saved.")
 
+        # Generate timestamped default filename as per assignment requirements: 
+        # response_<studentid>_<name>_<lastname>_<YYYYMMDD_HHMM>.json
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+        default_response_name = f"response_241ADB165_Ayma_Rehman_{timestamp}.json"
+        output_path = args.response if args.response else os.path.join(BASE_DIR, "data", default_response_name)
+        
+        save_json(responses, output_path)
+        print(f"✅ Query executed. {len(responses)} responses saved to {output_path}.")
+        
 if __name__ == "__main__":
     main()
