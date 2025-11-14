@@ -137,10 +137,24 @@ def run_queries(flights, query_file):
     queries = load_json(query_file)
     if not isinstance(queries, list):
         queries = [queries]
+
     responses = []
     for q in queries:
+        # Check if query has valid datetime/price formats before matching
+        try:
+            for field in ["departure_datetime", "arrival_datetime"]:
+                if field in q:
+                    datetime.strptime(q[field], "%Y-%m-%d %H:%M")
+            if "price" in q:
+                float(q["price"])
+        except ValueError as e:
+            print(f"⚠️ Skipping invalid query {q}: {e}")
+            continue  # Skip this entire query
+
+        # Run the query normally
         matches = [f for f in flights if matches_query(f, q)]
         responses.append({"query": q, "matches": matches})
+
     return responses
 
 # --- Paths for Lab2 
