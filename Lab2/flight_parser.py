@@ -12,11 +12,14 @@ def validate_flight(row):
     # basic format checks
     if not (2 <= len(flight_id) <= 8 and flight_id.isalnum()):
         return False, "Invalid flight ID"
-    # ^ = start, $ = end, [A-Z]{3} = exactly 3 uppercase letters
-    if not re.match(r"^[A-Z]{3}$", origin):
-        return False, "Invalid origin code"
-    if not re.match(r"^[A-Z]{3}$", destination):
+    if not re.fullmatch(r"[A-Z]{3}", origin):
+        return False, "Invalid origin code (needs to be 3 Uppercase letters)"
+    if re.fullmatch(r"(.)\1\1", origin):
+        return False, "Invalid origin code (3 identical letters)"
+    if not re.fullmatch(r"[A-Z]{3}", destination):
         return False, "Invalid destination code"
+    if re.fullmatch(r"(.)\1\1", destination):
+        return False, "Invalid destination code (3 identical letters)"
 
     # datetime validation
     try:
