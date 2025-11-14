@@ -17,7 +17,7 @@ def validate_flight(row):
     if re.fullmatch(r"(.)\1\1", origin):
         return False, "Invalid origin code (3 identical letters)"
     if not re.fullmatch(r"[A-Z]{3}", destination):
-        return False, "Invalid destination code"
+        return False, "Invalid destination code (needs to be 3 Uppercase letters)"
     if re.fullmatch(r"(.)\1\1", destination):
         return False, "Invalid destination code (3 identical letters)"
 
