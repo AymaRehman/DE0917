@@ -12,11 +12,14 @@ def validate_flight(row):
     # basic format checks
     if not (2 <= len(flight_id) <= 8 and flight_id.isalnum()):
         return False, "Invalid flight ID"
-    # ^ = start, $ = end, [A-Z]{3} = exactly 3 uppercase letters
-    if not re.match(r"^[A-Z]{3}$", origin):
-        return False, "Invalid origin code"
-    if not re.match(r"^[A-Z]{3}$", destination):
-        return False, "Invalid destination code"
+    if not re.fullmatch(r"[A-Z]{3}", origin):
+        return False, "Invalid origin code (needs to be 3 Uppercase letters)"
+    if re.fullmatch(r"(.)\1\1", origin):
+        return False, "Invalid origin code (3 identical letters)"
+    if not re.fullmatch(r"[A-Z]{3}", destination):
+        return False, "Invalid destination code (needs to be 3 Uppercase letters)"
+    if re.fullmatch(r"(.)\1\1", destination):
+        return False, "Invalid destination code (3 identical letters)"
 
     # datetime validation
     try:
@@ -106,28 +109,55 @@ def matches_query(flight, query):
         if field in ["flight_id", "origin", "destination"]:
             if flight.get(field) != value:
                 return False
-        elif field == "departure_datetime":
-            if datetime.strptime(flight[field], "%Y-%m-%d %H:%M") < datetime.strptime(value, "%Y-%m-%d %H:%M"):
+        elif field in ["departure_datetime", "arrival_datetime"]:
+            try:
+                flight_dt = datetime.strptime(flight[field], "%Y-%m-%d %H:%M")
+                query_dt = datetime.strptime(value, "%Y-%m-%d %H:%M")
+            except ValueError:
+                # Bad datetime format in the query → skip this query match
+                print(f"⚠️ Skipping query: bad datetime format in {field} → {value}")
                 return False
-        elif field == "arrival_datetime":
-            if datetime.strptime(flight[field], "%Y-%m-%d %H:%M") > datetime.strptime(value, "%Y-%m-%d %H:%M"):
+
+            if field == "departure_datetime" and flight_dt < query_dt:
+                return False
+            elif field == "arrival_datetime" and flight_dt > query_dt:
                 return False
         elif field == "price":
-            if flight[field] > value:
+            try:
+                if flight[field] > float(value):
+                    return False
+            except ValueError:
+                print(f"⚠️ Skipping query: bad price value → {value}")
                 return False
     return True
+
+# --- Running Query ---
 
 def run_queries(flights, query_file):
     queries = load_json(query_file)
     if not isinstance(queries, list):
         queries = [queries]
+
     responses = []
     for q in queries:
+        # Check if query has valid datetime/price formats before matching
+        try:
+            for field in ["departure_datetime", "arrival_datetime"]:
+                if field in q:
+                    datetime.strptime(q[field], "%Y-%m-%d %H:%M")
+            if "price" in q:
+                float(q["price"])
+        except ValueError as e:
+            print(f"⚠️ Skipping invalid query {q}: {e}")
+            continue  # Skip this entire query
+
+        # Run the query normally
         matches = [f for f in flights if matches_query(f, q)]
         responses.append({"query": q, "matches": matches})
+
     return responses
 
-# --- Paths for Lab2
+# --- Paths for Lab2 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)) 
 OUTPUT_JSON = os.path.join(BASE_DIR, "data/db.json")
 ERRORS_TXT = os.path.join(BASE_DIR, "data/errors.txt")
@@ -164,11 +194,16 @@ def main():
     # Run queries if requested
     if args.query:
         responses = run_queries(flights, args.query)
-        if args.response:
-            save_json(responses, args.response)
-        else:
-            save_json(responses, "Lab2/data/response.json")
-        print(f"✅ Query executed. {len(responses)} responses saved.")
 
+        # Generate timestamped default filename as per assignment requirements: 
+        # response_<studentid>_<name>_<lastname>_<YYYYMMDD_HHMM>.json
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+        default_response_name = f"response_241ADB165_Ayma_Rehman_{timestamp}.json"
+        output_path = args.response if args.response else os.path.join(BASE_DIR, "data", default_response_name)
+        
+        save_json(responses, output_path)
+        print(f"✅ Query executed. {len(responses)} responses saved to {output_path}.")
+        
 if __name__ == "__main__":
     main()
