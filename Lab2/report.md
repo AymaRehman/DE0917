@@ -25,3 +25,15 @@ The program fully meets the assignment requirements and handles all tasks listed
 |8|CLI arguments -i, -d, -o|✅|
 |9|Folder parsing, combined output, error handling|✅|
 |10|Load JSON -j, query execution -q, datetime filtering, response JSON|✅|
+
+### Resources 
+All resources were used as guidance to complete the project effectively.  
+Apart from the provided presentations, lectures, and practice labs, the following references were used.  
+https://www.geeksforgeeks.org/python/file-handling-python/   
+https://www.geeksforgeeks.org/python/os-module-python-examples/  
+https://www.w3schools.com/python/python_json.asp  
+https://www.w3schools.com/python/python_regex.asp  
+https://www.geeksforgeeks.org/python/working-csv-files-python/  
+https://docs.python.org/3/library/argparse.html  
+  
+This project is submitted as part of a university assignment. All code is authored by Ayma Rehman.  
