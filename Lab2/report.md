@@ -12,3 +12,16 @@ Exporting valid flights to a JSON database (db.json).
 Logging invalid rows with explanations (errors.txt).
 Optionally loading an existing JSON database.
 Executing queries from a JSON file and generating a query response JSON.
+
+### Features Implemented
+The program fully meets the assignment requirements and handles all tasks listed in the grading rubric (grades 4–10).  
+
+| Grade | Task | Status |   
+ --- | --- | --- |
+|4|Read and print CSV content|✅|
+|5|Basic field splitting, minimal validation|✅|
+|6|Full validation rules, separate valid/invalid, output files|✅|
+|7|JSON output for valid flights|✅|
+|8|CLI arguments -i, -d, -o|✅|
+|9|Folder parsing, combined output, error handling|✅|
+|10|Load JSON -j, query execution -q, datetime filtering, response JSON|✅|
