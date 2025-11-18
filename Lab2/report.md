@@ -17,7 +17,7 @@ Executing queries from a JSON file and generating a query response JSON.
 The program fully meets the assignment requirements and handles all tasks listed in the grading rubric (grades 4–10).  
 
 | Grade | Task | Status |   
- --- | --- | --- |
+| :------------: |:---------------:| :-----:|
 |4|Read and print CSV content|✅|
 |5|Basic field splitting, minimal validation|✅|
 |6|Full validation rules, separate valid/invalid, output files|✅|
@@ -36,4 +36,4 @@ https://www.w3schools.com/python/python_regex.asp
 https://www.geeksforgeeks.org/python/working-csv-files-python/  
 https://docs.python.org/3/library/argparse.html  
   
-This project is submitted as part of a university assignment. All code is authored by Ayma Rehman.  
+> This project is submitted as part of a university assignment. All code is authored by Ayma Rehman.  
