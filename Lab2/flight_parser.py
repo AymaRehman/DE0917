@@ -23,10 +23,13 @@ def validate_flight(row):
             errors.append("invalid flight_id format")
 
     # --- Origin ---
-    if not re.fullmatch(r"[A-Z]{3}", origin):
-        errors.append("Invalid origin code (needs to be 3 Uppercase letters)")
-    elif re.fullmatch(r"(.)\1\1", origin):
-        errors.append("invalid origin code (3 identical letters)")
+    if origin.strip() == "":
+        errors.append("missing origin field")
+    else:
+        if not re.fullmatch(r"[A-Z]{3}", origin):
+            errors.append("Invalid origin code (needs to be 3 Uppercase letters)")
+        elif re.fullmatch(r"(.)\1\1", origin):
+            errors.append("invalid origin code (3 identical letters)")
 
     # --- Destination ---
     if destination.strip() == "":
