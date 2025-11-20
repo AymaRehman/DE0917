@@ -54,9 +54,11 @@ python Lab2/flight_parser.py -h
 ### Parse a Single CSV File
 Parse one CSV file and save valid flights + errors:  
 ```
-python Lab2/flight_parser.py -i Lab2/data/inputs/flights.csv
+python Lab2/flight_parser.py -i Lab2/data/inputs/flights_invalid.csv
 ```    
-  
+```
+python Lab2/flight_parser.py -i Lab2/data/inputs/flights_valid.csv
+```    
 ✅ Valid flights → `Lab2/data/db.json`  
 ⚠️ Errors → `Lab2/data/errors.txt`  
   
