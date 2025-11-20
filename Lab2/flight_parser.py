@@ -9,35 +9,65 @@ from datetime import datetime
 # --- Validation Functions ---
 def validate_flight(row):
     flight_id, origin, destination, dep_dt, arr_dt, price = row
+    errors = []
 
     # basic format checks
-    if not (2 <= len(flight_id) <= 8 and flight_id.isalnum()):
-        return False, "Invalid flight ID"
-    if not re.fullmatch(r"[A-Z]{3}", origin):
-        return False, "Invalid origin code (needs to be 3 Uppercase letters)"
-    if re.fullmatch(r"(.)\1\1", origin):
-        return False, "Invalid origin code (3 identical letters)"
-    if not re.fullmatch(r"[A-Z]{3}", destination):
-        return False, "Invalid destination code (needs to be 3 Uppercase letters)"
-    if re.fullmatch(r"(.)\1\1", destination):
-        return False, "Invalid destination code (3 identical letters)"
 
-    # datetime validation
+    # --- Flight ID ---
+    if not (2 <= len(flight_id) <= 8 and flight_id.isalnum()):
+        if len(flight_id) < 2:
+            errors.append("flight_id too short")
+        elif len(flight_id) > 8:
+            errors.append("flight_id too long (more than 8 characters)")
+        else:
+            errors.append("invalid flight_id format")
+
+    # --- Origin ---
+    if not re.fullmatch(r"[A-Z]{3}", origin):
+        errors.append("Invalid origin code (needs to be 3 Uppercase letters)")
+    elif re.fullmatch(r"(.)\1\1", origin):
+        errors.append("invalid origin code (3 identical letters)")
+
+    # --- Destination ---
+    if destination.strip() == "":
+        errors.append("missing destination field")
+    else:
+        if not re.fullmatch(r"[A-Z]{3}", destination):
+            errors.append("Invalid destination code (needs to be 3 Uppercase letters)")
+        elif re.fullmatch(r"(.)\1\1", destination):
+            errors.append("invalid destination code (3 identical letters)")
+
+    # --- Datetime validation ---
+    dep = None
+    arr = None
+
+    # departure
     try:
         dep = datetime.strptime(dep_dt, "%Y-%m-%d %H:%M")
-        arr = datetime.strptime(arr_dt, "%Y-%m-%d %H:%M")
-        if arr <= dep:
-            return False, "Arrival before departure"
     except ValueError:
-        return False, "Invalid datetime format"
+        errors.append("invalid departure datetime")
+
+    # arrival
+    try:
+        arr = datetime.strptime(arr_dt, "%Y-%m-%d %H:%M")
+    except ValueError:
+        errors.append("invalid arrival datetime")
+
+    # only compare if both are correct
+    if dep is not None and arr is not None:
+        if arr <= dep:
+            errors.append("arrival before departure")
 
     # price check
     try:
         if float(price) <= 0:
-            return False, "Price must be positive"
+            errors.append("Price must be positive")
     except ValueError:
-        return False, "Invalid price"
+        errors.append("Invalid price")
 
+    # --- Final decision ---
+    if errors:
+        return False, ", ".join(errors)
     return True, None
 
 
@@ -52,8 +82,11 @@ def parse_csv(file_path):
             for i, row in enumerate(
                 reader, start=2
             ):  # start=2 to account for header line
-                if not row or row[0].startswith("#"):
-                    continue
+                if not row:
+                    continue  # ignores blank lines
+                if row[0].startswith("#"):
+                    invalid.append((i, row, "comment line, ignored for data parsing"))
+                    continue  # record comment lines in errors.txt (instead of skipping like blank lines)
                 if row == headers:
                     continue  # skip repeated header lines
                 if len(row) < 6:
@@ -225,7 +258,6 @@ def main():
         "-r",
         "--response",
         metavar="RESPONSE_JSON",
-        default=RESPONSE_JSON,
         help="Output responses to queries in JSON file. Default: Lab2/data/response.json; Format: -r path/to/response.json",
     )
     args = parser.parse_args()
