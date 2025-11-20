@@ -1,9 +1,10 @@
-# Author: Ayma Rehman  
-# Student ID: 241ADB165  
+# Author: Ayma Rehman
+# Student ID: 241ADB165
 # GitHub Repository: https://github.com/AymaRehman/DE0917/tree/main/Lab2
 
 import csv, os, re, json, argparse
 from datetime import datetime
+
 
 # --- Validation Functions ---
 def validate_flight(row):
@@ -39,6 +40,7 @@ def validate_flight(row):
 
     return True, None
 
+
 # --- CSV Parsing ---
 def parse_csv(file_path):
     valid, invalid = [], []
@@ -47,7 +49,9 @@ def parse_csv(file_path):
             reader = csv.reader(f)
             headers = next(reader, None)  # Skip the first header line (if present)
 
-            for i, row in enumerate(reader, start=2):  # start=2 to account for header line
+            for i, row in enumerate(
+                reader, start=2
+            ):  # start=2 to account for header line
                 if not row or row[0].startswith("#"):
                     continue
                 if row == headers:
@@ -59,14 +63,16 @@ def parse_csv(file_path):
                 else:  # when len(row) == 6
                     ok, reason = validate_flight(row)
                     if ok:
-                        valid.append({
-                            "flight_id": row[0],
-                            "origin": row[1],
-                            "destination": row[2],
-                            "departure_datetime": row[3],
-                            "arrival_datetime": row[4],
-                            "price": float(row[5])
-                        })
+                        valid.append(
+                            {
+                                "flight_id": row[0],
+                                "origin": row[1],
+                                "destination": row[2],
+                                "departure_datetime": row[3],
+                                "arrival_datetime": row[4],
+                                "price": float(row[5]),
+                            }
+                        )
                     else:
                         invalid.append((i, row, reason))
     except FileNotFoundError:
@@ -75,11 +81,13 @@ def parse_csv(file_path):
         print(f"⚠️ Error reading {file_path}: {e}")
     return valid, invalid
 
+
 # --- JSON Save / Load ---
 def save_json(data, path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as f:
         json.dump(data, f, indent=2)
+
 
 def save_errors(errors, path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -87,9 +95,11 @@ def save_errors(errors, path):
         for line_no, row, reason in errors:
             f.write(f"Line {line_no}: {','.join(row)} → {reason}\n")
 
+
 def load_json(path):
     with open(path, "r") as f:
         return json.load(f)
+
 
 # --- Directory Parsing ---
 def process_directory(directory):
@@ -100,8 +110,11 @@ def process_directory(directory):
             print(f"Processing: {filename}")
             valid, invalid = parse_csv(file_path)
             all_valid.extend(valid)
-            all_invalid.extend([(f"{filename}:{ln}", row, reason) for ln, row, reason in invalid])
+            all_invalid.extend(
+                [(f"{filename}:{ln}", row, reason) for ln, row, reason in invalid]
+            )
     return all_valid, all_invalid
+
 
 # --- Query Filtering ---
 def matches_query(flight, query):
@@ -131,7 +144,9 @@ def matches_query(flight, query):
                 return False
     return True
 
+
 # --- Running Query ---
+
 
 def run_queries(flights, query_file):
     queries = load_json(query_file)
@@ -157,22 +172,62 @@ def run_queries(flights, query_file):
 
     return responses
 
-# --- Paths for Lab2 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__)) 
+
+# --- Paths for Lab2
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_JSON = os.path.join(BASE_DIR, "data/db.json")
 ERRORS_TXT = os.path.join(BASE_DIR, "data/errors.txt")
 RESPONSE_JSON = os.path.join(BASE_DIR, "data/response.json")
 
+
 # --- Main ---
 def main():
     parser = argparse.ArgumentParser(description="Flight Data Parser and Query Tool")
-    parser.add_argument("-i", "--input", metavar = "CSV_FILE", help="Parse a single CSV file. Format: -i path/to/file.csv")
-    parser.add_argument("-d", "--directory", metavar = "CSV_FOLDER", help="Parse a folder containing multiple CSV files. Format: -d path/to/folder")
-    parser.add_argument("-o", "--output", metavar = "OUTPUT_JSON", default=OUTPUT_JSON, help="Output JSON database path. Default: Lab2/data/db.json; Format: -o path/to/output.json")
-    parser.add_argument("-e", "--errors", metavar = "ERROR_LOG", default=ERRORS_TXT, help="Output errors log path. Default: Lab2/data/errors.txt; Format: -e path/to/errors.txt")
-    parser.add_argument("-j", "--json", metavar = "JSON_DB", help="Load existing JSON database rather than parsing CSVs. Format: -j path/to/file.json")
-    parser.add_argument("-q", "--query", metavar = "QUERY_JSON", help="Respond to queries provided in JSON query file. Format: -q path/to/query.json")
-    parser.add_argument("-r", "--response", metavar = "RESPONSE_JSON", default=RESPONSE_JSON, help="Output responses to queries in JSON file. Default: Lab2/data/response.json; Format: -r path/to/response.json")
+    parser.add_argument(
+        "-i",
+        "--input",
+        metavar="CSV_FILE",
+        help="Parse a single CSV file. Format: -i path/to/file.csv",
+    )
+    parser.add_argument(
+        "-d",
+        "--directory",
+        metavar="CSV_FOLDER",
+        help="Parse a folder containing multiple CSV files. Format: -d path/to/folder",
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        metavar="OUTPUT_JSON",
+        default=OUTPUT_JSON,
+        help="Output JSON database path. Default: Lab2/data/db.json; Format: -o path/to/output.json",
+    )
+    parser.add_argument(
+        "-e",
+        "--errors",
+        metavar="ERROR_LOG",
+        default=ERRORS_TXT,
+        help="Output errors log path. Default: Lab2/data/errors.txt; Format: -e path/to/errors.txt",
+    )
+    parser.add_argument(
+        "-j",
+        "--json",
+        metavar="JSON_DB",
+        help="Load existing JSON database rather than parsing CSVs. Format: -j path/to/file.json",
+    )
+    parser.add_argument(
+        "-q",
+        "--query",
+        metavar="QUERY_JSON",
+        help="Respond to queries provided in JSON query file. Format: -q path/to/query.json",
+    )
+    parser.add_argument(
+        "-r",
+        "--response",
+        metavar="RESPONSE_JSON",
+        default=RESPONSE_JSON,
+        help="Output responses to queries in JSON file. Default: Lab2/data/response.json; Format: -r path/to/response.json",
+    )
     args = parser.parse_args()
 
     # Load or parse flights
@@ -195,15 +250,20 @@ def main():
     if args.query:
         responses = run_queries(flights, args.query)
 
-        # Generate timestamped default filename as per assignment requirements: 
+        # Generate timestamped default filename as per assignment requirements:
         # response_<studentid>_<name>_<lastname>_<YYYYMMDD_HHMM>.json
-        
+
         timestamp = datetime.now().strftime("%Y%m%d_%H%M")
         default_response_name = f"response_241ADB165_Ayma_Rehman_{timestamp}.json"
-        output_path = args.response if args.response else os.path.join(BASE_DIR, "data", default_response_name)
-        
+        output_path = (
+            args.response
+            if args.response
+            else os.path.join(BASE_DIR, "data", default_response_name)
+        )
+
         save_json(responses, output_path)
         print(f"✅ Query executed. {len(responses)} responses saved to {output_path}.")
-        
+
+
 if __name__ == "__main__":
     main()
