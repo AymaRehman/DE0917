@@ -29,16 +29,20 @@ Lab2/
 │   ├── inputs/
 │   │   ├── flights_invalid.csv
 │   │   ├── flights_valid.csv
+│   ├── query/
 │   │   └── query.json
+│   ├── outputs/
 │   ├── db.json
-│   ├── errors.txt
+│   ├── errors.txt         
 │   └── response.json
 ├── .gitignore
 ├── flight_parser.py
 ├── assignment.md
 ├── lab2_explanation.md
 ├── report.md
+├── requirements.in
 └── requirements.txt
+
 ```
 ## How To Run
   
@@ -59,33 +63,39 @@ python Lab2/flight_parser.py -i Lab2/data/inputs/flights_invalid.csv
 ```
 python Lab2/flight_parser.py -i Lab2/data/inputs/flights_valid.csv
 ```    
-✅ Valid flights → `Lab2/data/db.json`  
-⚠️ Errors → `Lab2/data/errors.txt`  
+✅ Valid flights → `Lab2/data/outputs/db.json`  
+⚠️ Errors → `Lab2/data/outputs/errors.txt`  
   
 ### Parse All CSV Files in a Folder
 Parse multiple `.csv` files inside a directory:  
 ```
 python Lab2/flight_parser.py -d Lab2/data/inputs
 ```  
+✅ Valid flights → `Lab2/data/outputs/db.json`  
+⚠️ Errors → `Lab2/data/outputs/errors.txt`  
 
 ### Load Existing Database
 Load a previously saved JSON database (no CSV parsing):  
 ```
-python Lab2/flight_parser.py -j Lab2/data/db.json
+python Lab2/flight_parser.py -j Lab2/data/outputs/db.json
 ```  
 
 ### Run Queries on the Database
 Run queries (from a JSON file) against the database:  
 ```
-python Lab2/flight_parser.py -j Lab2/data/db.json -q Lab2/data/inputs/query.json
+python Lab2/flight_parser.py -j Lab2/data/outputs/db.json -q Lab2/data/query/query.json
 ```  
+Query responses → `Lab2/data/outputs/response.json`
 
 ### Parse and Query in One Step
 Parse all CSVs and immediately run queries:  
 ```
-python Lab2/flight_parser.py -d Lab2/data/inputs -q Lab2/data/inputs/query.json
+python Lab2/flight_parser.py -d Lab2/data/inputs -q Lab2/data/query/query.json
 ```  
-
+✅ Valid flights → `Lab2/data/outputs/db.json`  
+⚠️ Errors → `Lab2/data/outputs/errors.txt`  
+Query responses → `Lab2/data/outputs/response.json`  
+  
 ### Custom Output Paths
 It is possible to override default output locations:  
 ``` 
