@@ -200,9 +200,9 @@ def run_queries(flights, query_file):
 
 # --- Paths for Lab2
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-OUTPUT_JSON = os.path.join(BASE_DIR, "data/db.json")
-ERRORS_TXT = os.path.join(BASE_DIR, "data/errors.txt")
-RESPONSE_JSON = os.path.join(BASE_DIR, "data/response.json")
+OUTPUT_JSON = os.path.join(BASE_DIR, "data/outputs/db.json")
+ERRORS_TXT = os.path.join(BASE_DIR, "data/outputs/errors.txt")
+RESPONSE_JSON = os.path.join(BASE_DIR, "data/outputs/response.json")
 
 
 # --- Main ---
@@ -282,7 +282,7 @@ def main():
         output_path = (
             args.response
             if args.response
-            else os.path.join(BASE_DIR, "data", default_response_name)
+            else os.path.join(BASE_DIR, "data", "outputs", default_response_name)
         )
 
         save_json(responses, output_path)
