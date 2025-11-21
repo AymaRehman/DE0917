@@ -29,3 +29,6 @@ Thumbs.db
 # Output files
 *.json
 errors.txt
+
+# Zip Files
+*.zip
