@@ -159,31 +159,20 @@ def matches_query(flight, query):
             if flight.get(field) != value:
                 return False
         elif field in ["departure_datetime", "arrival_datetime"]:
-            try:
-                flight_dt = datetime.strptime(flight[field], "%Y-%m-%d %H:%M")
-                query_dt = datetime.strptime(value, "%Y-%m-%d %H:%M")
-            except ValueError:
-                # Bad datetime format in the query → skip this query match
-                print(f"⚠️ Skipping query: bad datetime format in {field} → {value}")
-                return False
+            flight_dt = datetime.strptime(flight[field], "%Y-%m-%d %H:%M")
+            query_dt = datetime.strptime(value, "%Y-%m-%d %H:%M")
 
             if field == "departure_datetime" and flight_dt < query_dt:
                 return False
             elif field == "arrival_datetime" and flight_dt > query_dt:
                 return False
         elif field == "price":
-            try:
-                if flight[field] > float(value):
-                    return False
-            except ValueError:
-                print(f"⚠️ Skipping query: bad price value → {value}")
+            if flight[field] > float(value):
                 return False
     return True
 
 
 # --- Running Query ---
-
-
 def run_queries(flights, query_file):
     queries = load_json(query_file)
     if not isinstance(queries, list):
@@ -200,9 +189,9 @@ def run_queries(flights, query_file):
                 float(q["price"])
         except ValueError as e:
             print(f"⚠️ Skipping invalid query {q}: {e}")
-            continue  # Skip this entire query
+            continue  # Skip this entire query if validation fails
 
-        # Run the query normally
+        # Run the query normally after validation
         matches = [f for f in flights if matches_query(f, q)]
         responses.append({"query": q, "matches": matches})
 
