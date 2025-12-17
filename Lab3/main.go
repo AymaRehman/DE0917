@@ -34,3 +34,28 @@ func intCeilSqrt(n int) int {
 	return x
 }
 
+func splitIntoChunks(data []int, chunks int) [][]int {
+	result := make([][]int, 0, chunks)
+
+	n := len(data)
+	baseSize := n / chunks
+	remainder := n % chunks
+
+	start := 0
+	for i := 0; i < chunks; i++ {
+		size := baseSize
+		if i < remainder {
+			size++
+		}
+
+		end := start + size
+		if end > n {
+			end = n
+		}
+
+		result = append(result, data[start:end])
+		start = end
+	}
+
+	return result
+}
