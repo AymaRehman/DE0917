@@ -10,13 +10,6 @@ import (
 	"sync"
 )
 
-
-func main() {
-	fmt.Println("=================================")
-	fmt.Println("Gosort – concurrent chunk sorting")
-	fmt.Println("=================================")
-}
-
 func calculateChunkCount(n int) int {
 	if n <= 0 {
 		return 0
@@ -114,4 +107,31 @@ func mergeSortedChunks(chunks [][]int) []int {
 	}
 
 	return result
+}
+
+func main() {
+	data := []int{42, 7, 19, 3, 25, 1, 9, 30, 15, 8, 12, 6}
+
+	fmt.Println("Original data:")
+	fmt.Println(data)
+
+	chunkCount := calculateChunkCount(len(data))
+	chunks := splitIntoChunks(data, chunkCount)
+
+	fmt.Println("\nChunks before sorting:")
+	for i, c := range chunks {
+		fmt.Printf("Chunk %d: %v\n", i, c)
+	}
+
+	sortChunksConcurrently(chunks)
+
+	fmt.Println("\nChunks after sorting:")
+	for i, c := range chunks {
+		fmt.Printf("Chunk %d: %v\n", i, c)
+	}
+
+	merged := mergeSortedChunks(chunks)
+
+	fmt.Println("\nFinal merged sorted result:")
+	fmt.Println(merged)
 }
