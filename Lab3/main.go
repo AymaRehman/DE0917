@@ -79,3 +79,39 @@ func sortChunksConcurrently(chunks [][]int) {
 
 	wg.Wait()
 }
+
+func mergeSortedChunks(chunks [][]int) []int {
+	totalSize := 0
+	for _, chunk := range chunks {
+		totalSize += len(chunk)
+	}
+
+	result := make([]int, 0, totalSize)
+	indices := make([]int, len(chunks))
+
+	for {
+		minValue := 0
+		minChunk := -1
+
+		for i := range chunks {
+			if indices[i] >= len(chunks[i]) {
+				continue
+			}
+
+			val := chunks[i][indices[i]]
+			if minChunk == -1 || val < minValue {
+				minValue = val
+				minChunk = i
+			}
+		}
+
+		if minChunk == -1 {
+			break
+		}
+
+		result = append(result, minValue)
+		indices[minChunk]++
+	}
+
+	return result
+}
