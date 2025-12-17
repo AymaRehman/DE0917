@@ -5,10 +5,15 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"math/rand"
+	"os"
 	"sort"
 	"sync"
+	"time"
 )
+
 
 func calculateChunkCount(n int) int {
 	if n <= 0 {
@@ -110,9 +115,23 @@ func mergeSortedChunks(chunks [][]int) []int {
 }
 
 func main() {
-	data := []int{42, 7, 19, 3, 25, 1, 9, 30, 15, 8, 12, 6}
+	randCount := flag.Int("r", -1, "number of random integers to sort (must be >= 10)")
+	flag.Parse()
 
-	fmt.Println("Original data:")
+	if *randCount == -1 {
+		fmt.Println("Error: -r flag is required")
+		fmt.Println("Usage: gosort -r N")
+		os.Exit(1)
+	}
+
+	if *randCount < 10 {
+		fmt.Println("Error: N must be at least 10")
+		os.Exit(1)
+	}
+
+	data := generateRandomNumbers(*randCount)
+
+	fmt.Println("Original numbers:")
 	fmt.Println(data)
 
 	chunkCount := calculateChunkCount(len(data))
@@ -134,4 +153,14 @@ func main() {
 
 	fmt.Println("\nFinal merged sorted result:")
 	fmt.Println(merged)
+}
+
+func generateRandomNumbers(n int) []int {
+	rand.Seed(time.Now().UnixNano())
+
+	data := make([]int, n)
+	for i := 0; i < n; i++ {
+		data[i] = rand.Intn(1000) // range: 0–999
+	}
+	return data
 }
