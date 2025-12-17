@@ -4,7 +4,12 @@
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+	"sync"
+)
+
 
 func main() {
 	fmt.Println("=================================")
@@ -58,4 +63,19 @@ func splitIntoChunks(data []int, chunks int) [][]int {
 	}
 
 	return result
+}
+
+func sortChunksConcurrently(chunks [][]int) {
+	var wg sync.WaitGroup
+
+	for i := range chunks {
+		wg.Add(1)
+
+		go func(idx int) {
+			defer wg.Done()
+			sort.Ints(chunks[idx])
+		}(i)
+	}
+
+	wg.Wait()
 }
