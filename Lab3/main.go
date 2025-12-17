@@ -14,7 +14,6 @@ import (
 	"time"
 )
 
-
 func calculateChunkCount(n int) int {
 	if n <= 0 {
 		return 0
@@ -68,7 +67,6 @@ func sortChunksConcurrently(chunks [][]int) {
 
 	for i := range chunks {
 		wg.Add(1)
-
 		go func(idx int) {
 			defer wg.Done()
 			sort.Ints(chunks[idx])
@@ -114,15 +112,25 @@ func mergeSortedChunks(chunks [][]int) []int {
 	return result
 }
 
+func generateRandomNumbers(n int) []int {
+	rand.Seed(time.Now().UnixNano())
+
+	data := make([]int, n)
+	for i := 0; i < n; i++ {
+		data[i] = rand.Intn(1000) // range: 0–999
+	}
+	return data
+}
+
 func main() {
 	randCount := flag.Int("r", -1, "number of random integers to sort (must be >= 10)")
 	flag.Parse()
 
 	if flag.NArg() != 0 {
-	fmt.Println("Error: invalid extra arguments")
-	fmt.Println("Usage: gosort -r N")
-	os.Exit(1)
-}
+		fmt.Println("Error: invalid extra arguments")
+		fmt.Println("Usage: gosort -r N")
+		os.Exit(1)
+	}
 
 	if *randCount == -1 {
 		fmt.Println("Error: -r flag is required")
@@ -159,14 +167,4 @@ func main() {
 
 	fmt.Println("\nFinal merged sorted result:")
 	fmt.Println(merged)
-}
-
-func generateRandomNumbers(n int) []int {
-	rand.Seed(time.Now().UnixNano())
-
-	data := make([]int, n)
-	for i := 0; i < n; i++ {
-		data[i] = rand.Intn(1000) // range: 0–999
-	}
-	return data
 }
