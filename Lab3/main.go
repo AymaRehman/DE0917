@@ -118,6 +118,12 @@ func main() {
 	randCount := flag.Int("r", -1, "number of random integers to sort (must be >= 10)")
 	flag.Parse()
 
+	if flag.NArg() != 0 {
+	fmt.Println("Error: invalid extra arguments")
+	fmt.Println("Usage: gosort -r N")
+	os.Exit(1)
+}
+
 	if *randCount == -1 {
 		fmt.Println("Error: -r flag is required")
 		fmt.Println("Usage: gosort -r N")
