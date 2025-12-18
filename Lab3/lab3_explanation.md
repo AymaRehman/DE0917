@@ -5,7 +5,7 @@
 > - Any design decisions
 
 
-## Student Information
+## Personal Information
 - Name: Ayma Rehman
 - Student ID: 241ADB165
 - Course: DE0917 – Programming Languages
