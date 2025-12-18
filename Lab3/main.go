@@ -5,11 +5,14 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"math/rand"
 	"os"
 	"sort"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -122,28 +125,78 @@ func generateRandomNumbers(n int) []int {
 	return data
 }
 
+func readInputFile(filename string) ([]int, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, fmt.Errorf("cannot open file %s", filename)
+	}
+	defer file.Close()
+
+	var data []int
+	scanner := bufio.NewScanner(file)
+	lineNumber := 0
+
+	for scanner.Scan() {
+		lineNumber++
+		line := strings.TrimSpace(scanner.Text())
+
+		if line == "" {
+			continue
+		}
+
+		value, err := strconv.Atoi(line)
+		if err != nil {
+			return nil, fmt.Errorf("invalid integer on line %d", lineNumber)
+		}
+
+		data = append(data, value)
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
 func main() {
 	randCount := flag.Int("r", -1, "number of random integers to sort (must be >= 10)")
+	inputFile := flag.String("i", "", "input file containing integers (one per line)")
 	flag.Parse()
 
 	if flag.NArg() != 0 {
 		fmt.Println("Error: invalid extra arguments")
-		fmt.Println("Usage: gosort -r N")
+		fmt.Println("Usage:")
+		fmt.Println("  gosort -r N")
+		fmt.Println("  gosort -i input.txt")
 		os.Exit(1)
 	}
 
-	if *randCount == -1 {
-		fmt.Println("Error: -r flag is required")
-		fmt.Println("Usage: gosort -r N")
+	if (*randCount == -1 && *inputFile == "") || (*randCount != -1 && *inputFile != "") {
+		fmt.Println("Error: specify exactly one mode: -r or -i")
 		os.Exit(1)
 	}
 
-	if *randCount < 10 {
-		fmt.Println("Error: N must be at least 10")
-		os.Exit(1)
-	}
+	var data []int
+	var err error
 
-	data := generateRandomNumbers(*randCount)
+	if *randCount != -1 {
+		if *randCount < 10 {
+			fmt.Println("Error: N must be at least 10")
+			os.Exit(1)
+		}
+		data = generateRandomNumbers(*randCount)
+	} else {
+		data, err = readInputFile(*inputFile)
+		if err != nil {
+			fmt.Println("Error:", err)
+			os.Exit(1)
+		}
+		if len(data) < 10 {
+			fmt.Println("Error: input file must contain at least 10 valid integers")
+			os.Exit(1)
+		}
+	}
 
 	fmt.Println("Original numbers:")
 	fmt.Println(data)
