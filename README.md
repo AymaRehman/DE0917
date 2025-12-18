@@ -44,7 +44,18 @@ DE0917/
 │   ├── lab2_explanation.md
 │   ├── report.md
 │   └── requirements.txt
-└── (other labs)
+├── Lab3/
+│   ├── incoming/
+│   │   ├── a.txt
+│   │   └── b.txt
+│   ├── assignment.md
+│   ├── go.mod
+│   ├── gosort
+│   ├── input.txt
+│   ├── lab3_explanation.md
+│   ├── main.go
+│   └── report.md
+└── (other labs - if any)
      
 ```
 
@@ -53,5 +64,6 @@ DE0917/
 ### License
 
 This repository is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
 
 
