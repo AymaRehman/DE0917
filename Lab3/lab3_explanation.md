@@ -1,5 +1,4 @@
-# Lab 3: Concurrent Chunk Sorting in Go
-
+# Lab 3: `gosort` - Concurrent Chunk Sorting in Go
 
 > This is a README style document that explains:
 > - How to run each mode
