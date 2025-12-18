@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -159,22 +160,93 @@ func readInputFile(filename string) ([]int, error) {
 	return data, nil
 }
 
+func writeOutputFile(filename string, data []int) error {
+	file, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	writer := bufio.NewWriter(file)
+	for _, v := range data {
+		fmt.Fprintln(writer, v)
+	}
+	return writer.Flush()
+}
+
+func processDirectory(dir string) error {
+	info, err := os.Stat(dir)
+	if err != nil || !info.IsDir() {
+		return fmt.Errorf("invalid directory")
+	}
+
+	outputDir := dir + "_sorted_Ayma_Rehman_241ADB165"
+	if err := os.MkdirAll(outputDir, 0755); err != nil {
+		return err
+	}
+
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return err
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() || filepath.Ext(entry.Name()) != ".txt" {
+			continue
+		}
+
+		inputPath := filepath.Join(dir, entry.Name())
+		data, err := readInputFile(inputPath)
+		if err != nil || len(data) < 10 {
+			continue
+		}
+
+		chunks := splitIntoChunks(data, calculateChunkCount(len(data)))
+		sortChunksConcurrently(chunks)
+		sorted := mergeSortedChunks(chunks)
+
+		outputPath := filepath.Join(outputDir, entry.Name())
+		if err := writeOutputFile(outputPath, sorted); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func main() {
 	randCount := flag.Int("r", -1, "number of random integers to sort (must be >= 10)")
-	inputFile := flag.String("i", "", "input file containing integers (one per line)")
+	inputFile := flag.String("i", "", "input file containing integers")
+	dir := flag.String("d", "", "directory containing .txt files")
 	flag.Parse()
 
 	if flag.NArg() != 0 {
 		fmt.Println("Error: invalid extra arguments")
-		fmt.Println("Usage:")
-		fmt.Println("  gosort -r N")
-		fmt.Println("  gosort -i input.txt")
 		os.Exit(1)
 	}
 
-	if (*randCount == -1 && *inputFile == "") || (*randCount != -1 && *inputFile != "") {
-		fmt.Println("Error: specify exactly one mode: -r or -i")
+	modes := 0
+	if *randCount != -1 {
+		modes++
+	}
+	if *inputFile != "" {
+		modes++
+	}
+	if *dir != "" {
+		modes++
+	}
+
+	if modes != 1 {
+		fmt.Println("Error: specify exactly one mode: -r, -i, or -d")
 		os.Exit(1)
+	}
+
+	if *dir != "" {
+		if err := processDirectory(*dir); err != nil {
+			fmt.Println("Error:", err)
+			os.Exit(1)
+		}
+		return
 	}
 
 	var data []int
@@ -188,12 +260,8 @@ func main() {
 		data = generateRandomNumbers(*randCount)
 	} else {
 		data, err = readInputFile(*inputFile)
-		if err != nil {
-			fmt.Println("Error:", err)
-			os.Exit(1)
-		}
-		if len(data) < 10 {
-			fmt.Println("Error: input file must contain at least 10 valid integers")
+		if err != nil || len(data) < 10 {
+			fmt.Println("Error: invalid input file")
 			os.Exit(1)
 		}
 	}
@@ -201,8 +269,7 @@ func main() {
 	fmt.Println("Original numbers:")
 	fmt.Println(data)
 
-	chunkCount := calculateChunkCount(len(data))
-	chunks := splitIntoChunks(data, chunkCount)
+	chunks := splitIntoChunks(data, calculateChunkCount(len(data)))
 
 	fmt.Println("\nChunks before sorting:")
 	for i, c := range chunks {
@@ -216,8 +283,6 @@ func main() {
 		fmt.Printf("Chunk %d: %v\n", i, c)
 	}
 
-	merged := mergeSortedChunks(chunks)
-
 	fmt.Println("\nFinal merged sorted result:")
-	fmt.Println(merged)
+	fmt.Println(mergeSortedChunks(chunks))
 }
